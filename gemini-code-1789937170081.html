@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nauka Niemieckiego - PRO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --primary-color: #38bdf8;
+            --primary-hover: #0284c7;
+            --correct-color: #4ade80;
+            --incorrect-color: #f87171;
+            --glass-bg: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transition: background-color 0.5s ease;
+        }
+
+        /* --- Animated Background Blobs --- */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 1;
+            opacity: 0.5;
+            animation: moveBlobs 25s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(to right, var(--primary-color) 0%, #00f2fe 100%);
+        }
+
+        .blob-2 {
+            bottom: -20%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            top: 40%;
+            left: 50%;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(to right, #ff0844 0%, #ffb199 100%);
+            animation-delay: -10s;
+        }
+
+        @keyframes moveBlobs {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(100px, -100px) scale(1.2) rotate(180deg);
+            }
+
+            100% {
+                transform: translate(-50px, 50px) scale(0.9) rotate(360deg);
+            }
+        }
+
+        /* --- UI Glassmorphism --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 10;
+            padding: 45px 40px;
+            width: 90%;
+            max-width: 550px;
+            text-align: center;
+            min-height: 480px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: 0.5px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stat-badge {
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .score-badge {
+            color: var(--primary-color);
+        }
+
+        .streak-badge {
+            color: #fbbf24;
+            transition: transform 0.2s;
+        }
+
+        .pulse {
+            animation: pulse 0.4s ease-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .settings-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        #word-display {
+            flex-grow: 1;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+
+        .task-instruction {
+            font-size: 0.85rem;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .prompt-text {
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 18px 25px;
+            border-radius: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.25);
+            color: #fff;
+            font-size: 1.3rem;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.2), inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        input[type="text"]:disabled {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .shortcuts-hint {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: -5px;
+            margin-bottom: 15px;
+        }
+
+        .shortcuts-hint span {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: bold;
+        }
+
+        /* --- Relative Action Area & Hide/Unhide Feedback --- */
+        .action-area {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        button.action-btn {
+            position: relative;
+            width: 100%;
+            padding: 18px;
+            border-radius: 16px;
+            border: none;
+            background: var(--primary-color);
+            color: #0f172a;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button.action-btn:hover {
+            background: #7dd3fc;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.5);
+        }
+
+        button.action-btn.next-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        button.action-btn.next-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        button.action-btn.hidden {
+            display: none;
+        }
+
+        .feedback {
+            position: relative;
+            width: 100%;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            /* strictly hide when not active */
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .feedback.show {
+            display: block;
+            /* unhide when active */
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.correct {
+            color: var(--correct-color);
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
+            font-size: 1.5rem;
+        }
+
+        .feedback.incorrect {
+            color: var(--incorrect-color);
+        }
+
+        .correct-answer {
+            color: #fbbf24;
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-12px);
+            }
+
+            40% {
+                transform: translateX(12px);
+            }
+
+            60% {
+                transform: translateX(-8px);
+            }
+
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        /* --- Settings & Modals --- */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .slider {
+            width: 44px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 34px;
+            position: relative;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            left: 3px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.3s;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .range-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        input[type="range"] {
+            accent-color: var(--primary-color);
+            width: 120px;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-panel {
+            width: 90%;
+            max-width: 420px;
+            padding: 35px;
+            text-align: left;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .settings-panel {
+            transform: scale(1);
+        }
+
+        .settings-panel h2 {
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group h3 {
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .color-picker-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .color-picker-label input {
+            cursor: pointer;
+            border: none;
+            width: 45px;
+            height: 35px;
+            border-radius: 8px;
+            background: none;
+        }
+
+        .color-picker-label input::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-picker-label input::-webkit-color-swatch {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+        }
+
+        .close-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* --- Particles --- */
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--correct-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* --- Alya VTuber Companion --- */
+        .alya-container {
+            position: fixed;
+            bottom: -10px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            z-index: 50;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            transition: transform 0.5s ease;
+            cursor: pointer;
+        }
+
+        .alya-container.hidden {
+            transform: translateY(120%);
+        }
+
+        .alya-img {
+            width: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.4));
+        }
+
+        .alya-img.talking {
+            animation: vtuberBounce 0.6s ease-in-out infinite;
+        }
+
+        @keyframes vtuberBounce {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+        }
+
+        .speech-bubble {
+            position: absolute;
+            top: -20px;
+            right: 180px;
+            background: #fff;
+            color: #1e293b;
+            padding: 15px 20px;
+            border-radius: 20px;
+            border-bottom-right-radius: 5px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: max-content;
+            max-width: 280px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            clip-path: polygon(0 0, 0 100%, 100% 100%);
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .speech-bubble .translation {
+            font-size: 0.8rem;
+            color: #64748b;
+            display: block;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* =========================================
+           MOBILE OPTIMIZATIONS
+           ========================================= */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 30px 20px;
+                min-height: auto;
+            }
+
+            .header h1 {
+                font-size: 1.1rem;
+            }
+
+            .prompt-text {
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+
+            input[type="text"] {
+                padding: 15px 20px;
+                font-size: 1.1rem;
+            }
+
+            button.action-btn {
+                padding: 15px;
+                font-size: 1.1rem;
+            }
+
+            .settings-btn {
+                top: 15px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            /* Scale Down Settings Modal so no un-zooming is needed */
+            .settings-panel {
+                padding: 25px 20px;
+                width: 95%;
+            }
+
+            .settings-panel h2 {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+
+            .setting-group h3 {
+                font-size: 0.95rem;
+                margin-bottom: 10px;
+            }
+
+            .toggle-switch,
+            .range-container,
+            .color-picker-label {
+                font-size: 0.85rem;
+                margin-bottom: 12px;
+            }
+
+            input[type="range"] {
+                width: 100px;
+            }
+
+            .slider {
+                width: 40px;
+                height: 22px;
+            }
+
+            .slider:before {
+                width: 16px;
+                height: 16px;
+            }
+
+            input:checked+.slider:before {
+                transform: translateX(18px);
+            }
+
+            /* Scale Down Alya so she doesn't block UI / Break Mobile view */
+            .alya-container {
+                width: 140px;
+                height: 200px;
+                right: 0px;
+                bottom: -5px;
+            }
+
+            /* Reposition Speech Bubble specifically for mobile Alya */
+            .speech-bubble {
+                right: 120px;
+                /* Push it left of her head */
+                top: -50px;
+                max-width: 180px;
+                padding: 10px 12px;
+                font-size: 0.85rem;
+                border-bottom-right-radius: 20px;
+                /* reset border radius */
+            }
+
+            .speech-bubble .translation {
+                font-size: 0.75rem;
+            }
+
+            /* Repoint the speech bubble tail right towards her face */
+            .speech-bubble::after {
+                right: -10px;
+                bottom: 15px;
+                clip-path: polygon(0 0, 0 100%, 100% 50%);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .speech-bubble {
+                right: 100px;
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="glass-panel main-container" id="app-container">
+        <div class="header">
+            <h1>Trening Słówek</h1>
+            <div class="stats">
+                <div class="stat-badge streak-badge" id="streak-container">🔥 <span id="streak">0</span></div>
+                <div class="stat-badge score-badge">Wynik: <span id="score">0</span>/<span id="total">0</span></div>
+            </div>
+        </div>
+
+        <div id="word-display">
+            <div class="task-instruction" id="task-instruction">Ładowanie...</div>
+            <div class="prompt-text" id="prompt-text"></div>
+        </div>
+
+        <div class="input-wrapper">
+            <input type="text" id="answer-input" placeholder="Wpisz odpowiedź..." autocomplete="off">
+        </div>
+        <div class="shortcuts-hint">Skróty: <span>1</span>=ä &nbsp; <span>2</span>=ö &nbsp; <span>3</span>=ü &nbsp;
+            <span>4</span>=ß
+        </div>
+
+        <!-- Action area logic adjusted for relative positioning -->
+        <div class="action-area">
+            <div class="feedback" id="feedback"></div>
+            <button class="action-btn" id="action-btn" onclick="handleAction()">Sprawdź</button>
+        </div>
+    </div>
+
+    <!-- Alya VTuber Companion -->
+    <div class="alya-container" id="alya-container" onclick="handleAlyaClick()">
+        <div class="speech-bubble" id="alya-bubble">
+            <span id="alya-text"></span>
+            <span class="translation" id="alya-translation"></span>
+        </div>
+        <img src="img/happy1.png" alt="Alya" class="alya-img" id="alya-img" onerror="this.style.display='none'">
+    </div>
+
+    <!-- Modal Ustawień -->
+    <div class="modal-overlay" id="settings-modal" onclick="closeModalOnOutsideClick(event)">
+        <div class="glass-panel settings-panel">
+            <h2>Ustawienia</h2>
+
+            <div class="setting-group">
+                <h3>Tryby nauki</h3>
+                <label class="toggle-switch">Infinitiv ➔ Partizip II <input type="checkbox" id="mode-p2" checked
+                        onchange="updateModes()"><span class="slider"></span></label>
+                <label class="toggle-switch">Niemiecki ➔ Polski <input type="checkbox" id="mode-pl" checked
+                        onchange="updateModes()"><span class="slider"></span></label>
+                <label class="toggle-switch">Polski ➔ Niemiecki <input type="checkbox" id="mode-de" checked
+                        onchange="updateModes()"><span class="slider"></span></label>
+            </div>
+
+            <div class="setting-group">
+                <h3>Alya & Dźwięk</h3>
+                <label class="toggle-switch">Towarzyszka Alya <input type="checkbox" id="toggle-alya" checked
+                        onchange="updateAlyaSettings()"><span class="slider"></span></label>
+                <div class="range-container">
+                    Głośność (Gra & Alya)
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5"
+                        onchange="updateVolume()">
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3>Wygląd</h3>
+                <label class="color-picker-label">Kolor akcentu <input type="color" id="color-primary" value="#38bdf8"
+                        onchange="updateColors()"></label>
+                <label class="color-picker-label">Kolor tła <input type="color" id="color-bg" value="#0f172a"
+                        onchange="updateColors()"></label>
+            </div>
+
+            <button class="close-btn" onclick="toggleSettings()">Zapisz i Zamknij</button>
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            { inf: "beginnen", pl: "zaczynać", p2: "begonnen" }, { inf: "bekommen", pl: "otrzymać", p2: "bekommen" },
+            { inf: "bestehen", pl: "zdać egzamin", p2: "bestanden" }, { inf: "bieten", pl: "oferować", p2: "geboten" },
+            { inf: "bitten", pl: "prosić", p2: "gebeten" }, { inf: "bleiben", pl: "pozostawać", p2: "geblieben" },
+            { inf: "bringen", pl: "przynosić", p2: "gebracht" }, { inf: "denken", pl: "myśleć", p2: "gedacht" },
+            { inf: "dürfen", pl: "mieć pozwolenie", p2: "gedurft" }, { inf: "empfangen", pl: "przyjmować", p2: "empfangen" },
+            { inf: "empfehlen", pl: "polecać", p2: "empfohlen" }, { inf: "essen", pl: "jeść", p2: "gegessen" },
+            { inf: "fahren", pl: "jechać, wieźć", p2: "gefahren" }, { inf: "fangen", pl: "łapać", p2: "gefangen" },
+            { inf: "finden", pl: "znajdować", p2: "gefunden" }, { inf: "fliegen", pl: "latać", p2: "geflogen" },
+            { inf: "fließen", pl: "płynąć", p2: "geflossen" }, { inf: "geben", pl: "dawać", p2: "gegeben" },
+            { inf: "gefallen", pl: "podobać się", p2: "gefallen" }, { inf: "gehen", pl: "iść", p2: "gegangen" },
+            { inf: "gewinnen", pl: "wygrać", p2: "gewonnen" }, { inf: "haben", pl: "mieć", p2: "gehabt" },
+            { inf: "halten", pl: "trzymać", p2: "gehalten" }, { inf: "hängen", pl: "wisieć", p2: "gehangen" },
+            { inf: "heben", pl: "podnosić", p2: "gehoben" }, { inf: "heißen", pl: "nazywać się", p2: "geheißen" },
+            { inf: "helfen", pl: "pomagać", p2: "geholfen" }, { inf: "kennen", pl: "znać", p2: "gekannt" },
+            { inf: "kommen", pl: "przychodzić", p2: "gekommen" }, { inf: "können", pl: "móc, umieć", p2: "gekonnt" },
+            { inf: "laden", pl: "ładować, zapraszać", p2: "geladen" }, { inf: "lassen", pl: "zostawiać, kazać", p2: "gelassen" },
+            { inf: "laufen", pl: "biec", p2: "gelaufen" }, { inf: "leihen", pl: "pożyczać", p2: "geliehen" },
+            { inf: "lesen", pl: "czytać", p2: "gelesen" }, { inf: "liegen", pl: "leżeć", p2: "gelegen" },
+            { inf: "mögen", pl: "lubić, chcieć", p2: "gemocht" }
+        ];
+
+        const alyaQuotes = {
+            correct: [
+                { img: 'happy', rus: 'Молодец!', pl: '(Dobry chłopiec!)', jp: 'いい子だね！' },
+                { img: 'seductive', rus: 'Отличная работа~', pl: '(Świetna robota~)', jp: 'いい仕事したね~' },
+                { img: 'happy', rus: 'Так держать!', pl: '(Oby tak dalej!)', jp: 'その調子！' },
+                { img: 'happy', rus: 'Правильно!', pl: '(Dobrze!)', jp: '正解！' },
+                { img: 'happy', rus: 'Умница~', pl: '(Ale z ciebie mądrala~)', jp: 'えらいね~' },
+                { img: 'seductive', rus: 'Хм... неплохо.', pl: '(Hm... całkiem nieźle.)', jp: 'ふーん...悪くないね。' },
+                { img: 'happy', rus: 'Я знала, что ты сможешь!', pl: '(Wiedziałam, że dasz radę!)', jp: 'できると思ってたよ！' },
+                { img: 'happy', rus: 'Вот видишь? Ты можешь!', pl: '(Widzisz? Potrafisz!)', jp: 'ほら、できるじゃん！' },
+                { img: 'seductive', rus: 'Неплохо, сэнпай~', pl: '(Nieźle, senpai~)', jp: '悪くないね、先輩~' }
+            ],
+            incorrect: [
+                { img: 'angry', rus: 'Дурак...', pl: '(Głuptas... Skup się!)', jp: 'バカ...' },
+                { img: 'confused', rus: 'Эмм...', pl: '(Emm... na pewno?)', jp: 'えっと...' },
+                { img: 'angry', rus: 'Нет! Неправильно!', pl: '(Nie! Źle!)', jp: '違うよ！' },
+                { img: 'confused', rus: 'Ты серьёзно?', pl: '(Ty tak serio?)', jp: '本気なの？' },
+                { img: 'angry', rus: 'Думай лучше.', pl: '(Pomyśl trochę lepiej.)', jp: 'もう少し考えて。' },
+                { img: 'confused', rus: 'Ты просто торопишься.', pl: '(Po prostu się spieszysz.)', jp: '焦りすぎだよ。' },
+                { img: 'angry', rus: 'Сконцентрируйся!', pl: '(Skup się!)', jp: '集中して！' },
+                { img: 'seductive', rus: 'Хочешь, чтобы я подсказала?', pl: '(Chcesz, żebym ci podpowiedziała?)', jp: 'ヒント欲しい？' },
+                { img: 'confused', rus: 'Может, ещё раз?', pl: '(Może jeszcze raz?)', jp: 'もう一回やる？' }
+            ],
+            shocked: [
+                { img: 'shocked', rus: 'Что?!', pl: '(Co?! Taka piękna seria przerwana?!)', jp: 'えっ？！' },
+                { img: 'shocked', rus: 'Чего?!', pl: '(Że co?!)', jp: 'なに？！' },
+                { img: 'shocked', rus: 'Не может быть!', pl: '(Niemożliwe!)', jp: 'ありえない！' },
+                { img: 'shocked', rus: 'Ты серьёзно сейчас?!', pl: '(Ty tak na serio teraz?!)', jp: '今、本気？！' }
+            ],
+            streak5: [
+                { img: 'happy', rus: 'Пять подряд! Неплохо~', pl: '(Pięć pod rząd! Nieźle~)', jp: '5問連続！いいね~' },
+                { img: 'seductive', rus: 'Ого... ты входишь во вкус~', pl: '(Oho... zaczynasz się rozkręcać~)', jp: 'おお...調子出てきたね~' }
+            ],
+            streak10: [
+                { img: 'happy', rus: 'Десять подряд?! Впечатляет!', pl: '(Dziesięć pod rząd?! Imponujące!)', jp: '10問連続？！すごい！' },
+                { img: 'seductive', rus: 'Неужели ты становишься умнее?', pl: '(Czyżbyś robił się coraz mądrzejszy?)', jp: 'もしかして賢くなってる？' },
+                { img: 'happy', rus: 'Я горжусь тобой~', pl: '(Jestem z ciebie dumna~)', jp: '誇りに思うよ~' }
+            ],
+            streak20: [
+                { img: 'reward', rus: 'Очень хорошо, сэнпай~', pl: '(N-nie myśl, że jestem pod wrażeniem!)', jp: 'すごいよ、先輩~' },
+                { img: 'seductive', rus: 'Двадцать подряд... Неплохо.', pl: '(Dwadzieścia pod rząd... Nieźle.)', jp: '20問連続...悪くないね。' },
+                { img: 'reward', rus: 'Я действительно впечатлена...', pl: '(Naprawdę robi wrażenie...)', jp: '本当に感心したよ...' }
+            ],
+            streak50: [
+                { img: 'shocked', rus: 'Пятьдесят?! Ты что, монстр?!', pl: '(Pięćdziesiąt?! Ty jesteś jakimś potworem?!)', jp: '50問？！化け物なの？！' },
+                { img: 'reward', rus: 'Ладно... я впечатлена.', pl: '(Dobra... jestem pod wrażeniem.)', jp: 'もう...感心したよ。' }
+            ],
+            comboBroken: [
+                { img: 'shocked', rus: 'А-а?! Твоя серия!', pl: '(A-a?! Twoja seria!)', jp: 'あっ？！連続記録が！' },
+                { img: 'angry', rus: 'Эх... и всё было так хорошо...', pl: '(Ech... a było tak dobrze...)', jp: 'もう...せっかく順調だったのに...' },
+                { img: 'confused', rus: 'Жаль...', pl: '(Szkoda...)', jp: '残念...' }
+            ],
+            encouragement: [
+                { img: 'happy', rus: 'Не сдавайся!', pl: '(Nie poddawaj się!)', jp: '諦めないで！' },
+                { img: 'happy', rus: 'У тебя получится!', pl: '(Dasz radę!)', jp: '君ならできるよ！' },
+                { img: 'seductive', rus: 'Я верю в тебя~', pl: '(Wierzę w ciebie~)', jp: '君なら大丈夫~' },
+                { img: 'happy', rus: 'Ещё одна попытка!', pl: '(Jeszcze jedna próba!)', jp: 'もう一回！' }
+            ],
+            idle: [
+                { img: 'confused', rus: 'Ты там не уснул?', pl: '(Nie zasnąłeś там?)', jp: '寝ちゃったの？' },
+                { img: 'angry', rus: 'Эй! Мы вообще-то учимся!', pl: '(Hej! Przecież się uczymy!)', jp: 'ねえ！勉強中だよ！' },
+                { img: 'seductive', rus: 'Слишком долго смотришь на меня~', pl: '(Za długo się на mnie patrzysz~)', jp: 'そんなに私を見つめてどうしたの~' }
+            ],
+            easterEgg: [
+                { img: 'shocked', rus: 'М-мило...', pl: '(S-słodkie!)', jp: 'か、かわいい...' },
+                { img: 'shocked', rus: 'П-перестань так смотреть!', pl: '(P-przestań się tak patrzeć!)', jp: 'そ、そんなに見ないで！' },
+                { img: 'seductive', rus: 'Ты опять пришёл ко мне?', pl: '(Znowu do mnie przyszedłeś?)', jp: 'また私に会いに来たの？' },
+                { img: 'happy', rus: 'Скучал по мне?', pl: '(Tęskniłeś za mną?)', jp: '私に会いたかった？' }
+            ],
+            perfect: [
+                { img: 'shocked', rus: 'Идеально!', pl: '(Idealnie!)', jp: '完璧！' },
+                { img: 'reward', rus: 'Ни одной ошибки?!', pl: '(Ani jednego błędu?!)', jp: '一問も間違えてない？！' },
+                { img: 'seductive', rus: 'Хм... теперь я впечатлена~', pl: '(Hm... teraz jestem pod wrażeniem~)', jp: 'ふーん...今度は本当にすごいね~' }
+            ],
+            longSession: [
+                { img: 'confused', rus: 'Ты всё ещё здесь?', pl: '(Nadal tu jesteś?)', jp: 'まだやってるの？' },
+                { img: 'happy', rus: 'Ты действительно стараешься.', pl: '(Naprawdę się starasz.)', jp: '本当に頑張ってるね。' },
+                { img: 'seductive', rus: 'Не переутомляйся, хорошо?', pl: '(Nie przemęczaj się, dobrze?)', jp: '無理しすぎないでね？' }
+            ]
+        };
+
+        let currentQueue = [];
+        let currentWord = null, currentMode = '';
+        let activeModes = ['p2', 'pl', 'de'];
+
+        let score = 0, totalAttempts = 0, currentStreak = 0;
+        let consecutiveWrong = 0;
+        let isWaitingForNext = false;
+
+        const wordDisplay = document.getElementById('word-display');
+        const instructionEl = document.getElementById('task-instruction');
+        const promptEl = document.getElementById('prompt-text');
+        const inputEl = document.getElementById('answer-input');
+        const feedbackEl = document.getElementById('feedback');
+        const actionBtn = document.getElementById('action-btn');
+        const streakEl = document.getElementById('streak');
+        const streakContainer = document.getElementById('streak-container');
+
+        let alyaEnabled = true;
+        let sfxVolume = 0.5;
+        let currentVoice = null;
+        let bubbleTimeout, idleTimer;
+        const alyaImg = document.getElementById('alya-img');
+        const alyaBubble = document.getElementById('alya-bubble');
+        const alyaText = document.getElementById('alya-text');
+        const alyaTranslation = document.getElementById('alya-translation');
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            if (!alyaEnabled) return;
+            idleTimer = setTimeout(() => { triggerAlya('idle'); }, 30000);
+        }
+
+        document.addEventListener('mousemove', resetIdleTimer);
+        document.addEventListener('keypress', resetIdleTimer);
+
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playDing() {
+            if (sfxVolume <= 0) return; initAudio();
+            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.type = 'sine'; osc.frequency.setValueAtTime(880, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(sfxVolume, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+        }
+
+        function playBuzzer() {
+            if (sfxVolume <= 0) return; initAudio();
+            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+            gain.gain.setValueAtTime(sfxVolume * 0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function triggerAlya(category, forcedIndex = null) {
+            if (!alyaEnabled) return;
+            const quotes = alyaQuotes[category];
+            if (!quotes) return;
+
+            if (currentVoice) {
+                currentVoice.pause();
+                currentVoice.currentTime = 0;
+            }
+
+            const index = forcedIndex !== null ? forcedIndex : Math.floor(Math.random() * quotes.length);
+            const data = quotes[index];
+
+            const isJp = Math.random() > 0.5;
+            const langFolder = isJp ? 'jp' : 'rus';
+
+            const imgVar = Math.floor(Math.random() * 3) + 1;
+            alyaImg.src = `img/${data.img}${imgVar}.png`;
+
+            alyaText.textContent = isJp ? data.jp : data.rus;
+            alyaTranslation.textContent = data.pl;
+
+            const audioPath = `sounds/${category}/${langFolder}/${index + 1}.mp3`;
+            currentVoice = new Audio(audioPath);
+            currentVoice.volume = sfxVolume;
+
+            currentVoice.play().catch(e => { console.log(`Audio error: ${audioPath}`, e); });
+
+            alyaImg.classList.add('talking');
+            alyaBubble.classList.add('show');
+
+            clearTimeout(bubbleTimeout);
+
+            currentVoice.onended = stopAlyaTalking;
+            bubbleTimeout = setTimeout(stopAlyaTalking, 4500);
+        }
+
+        function stopAlyaTalking() {
+            alyaBubble.classList.remove('show');
+            alyaImg.classList.remove('talking');
+            setTimeout(() => { if (!alyaBubble.classList.contains('show')) alyaImg.src = 'img/happy1.png'; }, 300);
+        }
+
+        function handleAlyaClick() {
+            const index = Math.random() > 0.5 ? 1 : 2;
+            triggerAlya('easterEgg', index);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initQueue() { currentQueue = shuffle([...words]); }
+
+        function loadNextWord() {
+            if (activeModes.length === 0) activeModes = ['p2'];
+
+            if (currentQueue.length === 0) initQueue();
+            currentWord = currentQueue.pop();
+            currentMode = activeModes[Math.floor(Math.random() * activeModes.length)];
+
+            wordDisplay.classList.add('fade-out');
+
+            setTimeout(() => {
+                if (currentMode === 'p2') { instructionEl.textContent = "Podaj Partizip II"; promptEl.textContent = currentWord.inf; }
+                else if (currentMode === 'pl') { instructionEl.textContent = "Przetłumacz na polski"; promptEl.textContent = currentWord.inf; }
+                else if (currentMode === 'de') { instructionEl.textContent = "Podaj bezokolicznik (niemiecki)"; promptEl.textContent = currentWord.pl; }
+
+                inputEl.value = ''; inputEl.disabled = false;
+
+                feedbackEl.classList.remove('show', 'correct', 'incorrect'); feedbackEl.innerHTML = '';
+                actionBtn.classList.remove('hidden', 'next-btn'); actionBtn.textContent = 'Sprawdź';
+
+                isWaitingForNext = false; wordDisplay.classList.remove('fade-out'); inputEl.focus();
+            }, 120);
+        }
+
+        function handleAction() {
+            initAudio();
+            if (isWaitingForNext) loadNextWord();
+            else checkAnswer();
+        }
+
+        function checkAnswer() {
+            const userAnswer = inputEl.value.trim().toLowerCase();
+            if (userAnswer === '') return;
+
+            if (userAnswer === 'alya') {
+                const index = Math.random() > 0.5 ? 0 : 3;
+                triggerAlya('easterEgg', index);
+                inputEl.value = '';
+                return;
+            }
+
+            let isCorrect = false, correctAnswerText = '';
+            if (currentMode === 'p2') { isCorrect = (userAnswer === currentWord.p2.toLowerCase()); correctAnswerText = currentWord.p2; }
+            else if (currentMode === 'de') { isCorrect = (userAnswer === currentWord.inf.toLowerCase()); correctAnswerText = currentWord.inf; }
+            else if (currentMode === 'pl') {
+                const validAnswers = currentWord.pl.split(',').map(s => s.trim().toLowerCase());
+                isCorrect = validAnswers.includes(userAnswer); correctAnswerText = currentWord.pl;
+            }
+
+            totalAttempts++;
+            inputEl.disabled = true;
+            actionBtn.classList.add('hidden');
+
+            if (isCorrect) {
+                consecutiveWrong = 0;
+                score++; currentStreak++;
+                updateStreakUI(); createSparkles(); playDing();
+
+                if (currentStreak === 50) triggerAlya('streak50');
+                else if (currentStreak === 20) triggerAlya('streak20');
+                else if (currentStreak === 10) triggerAlya('streak10');
+                else if (currentStreak === 5) triggerAlya('streak5');
+                else if (totalAttempts > 100 && Math.random() > 0.85) triggerAlya('longSession');
+                else triggerAlya('correct');
+
+                feedbackEl.textContent = 'Świetnie!'; feedbackEl.className = 'feedback show correct';
+                setTimeout(loadNextWord, 500);
+            } else {
+                consecutiveWrong++;
+                playBuzzer();
+
+                if (currentStreak >= 5) {
+                    triggerAlya('comboBroken');
+                } else if (consecutiveWrong >= 1 && consecutiveWrong <= 3) {
+                    if (Math.random() > 0.5) triggerAlya('encouragement');
+                    else triggerAlya('incorrect');
+                } else {
+                    triggerAlya('incorrect');
+                }
+
+                currentStreak = 0; updateStreakUI();
+                isWaitingForNext = true;
+
+                actionBtn.textContent = 'Enter ➔';
+                actionBtn.classList.remove('hidden'); actionBtn.classList.add('next-btn');
+
+                feedbackEl.innerHTML = `Błąd.<span class="correct-answer">${correctAnswerText}</span>`;
+                feedbackEl.className = 'feedback show incorrect';
+
+                const container = document.getElementById('app-container');
+                container.classList.remove('shake'); void container.offsetWidth; container.classList.add('shake');
+
+                currentQueue.unshift(currentWord);
+            }
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = totalAttempts;
+        }
+
+        function updateStreakUI() {
+            streakEl.textContent = currentStreak;
+            if (currentStreak > 0) { streakContainer.classList.remove('pulse'); void streakContainer.offsetWidth; streakContainer.classList.add('pulse'); }
+        }
+
+        function createSparkles() {
+            const container = document.getElementById('app-container');
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div'); particle.classList.add('particle');
+                const angle = Math.random() * Math.PI * 2, velocity = 40 + Math.random() * 60;
+                const tx = Math.cos(angle) * velocity, ty = Math.sin(angle) * velocity - 20;
+                particle.style.left = '50%'; particle.style.top = '65%'; container.appendChild(particle);
+                particle.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                    { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0)`, opacity: 0 }
+                ], { duration: 400 + Math.random() * 200, easing: 'cubic-bezier(0, .9, .57, 1)' });
+                setTimeout(() => particle.remove(), 600);
+            }
+        }
+
+        inputEl.addEventListener('keydown', function (e) {
+            const charMap = { '1': 'ä', '2': 'ö', '3': 'ü', '4': 'ß' };
+            if (charMap[e.key]) {
+                e.preventDefault(); const start = this.selectionStart; const char = charMap[e.key];
+                this.value = this.value.substring(0, start) + char + this.value.substring(this.selectionEnd);
+                this.selectionStart = this.selectionEnd = start + 1;
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('settings-modal').classList.contains('active')) return;
+                if (isWaitingForNext || document.activeElement === inputEl) handleAction();
+            }
+        });
+
+        function toggleSettings() { document.getElementById('settings-modal').classList.toggle('active'); }
+        function closeModalOnOutsideClick(e) { if (e.target === document.getElementById('settings-modal')) toggleSettings(); }
+
+        function updateVolume() {
+            sfxVolume = parseFloat(document.getElementById('volume-slider').value);
+            if (currentVoice) currentVoice.volume = sfxVolume;
+            playDing();
+        }
+
+        function updateAlyaSettings() {
+            alyaEnabled = document.getElementById('toggle-alya').checked;
+            const alyaCont = document.getElementById('alya-container');
+            if (alyaEnabled) {
+                alyaCont.classList.remove('hidden'); alyaImg.src = 'img/happy1.png'; resetIdleTimer();
+            } else {
+                alyaCont.classList.add('hidden'); clearTimeout(idleTimer);
+                if (currentVoice) currentVoice.pause();
+            }
+        }
+
+        function updateModes() {
+            activeModes = [];
+            if (document.getElementById('mode-p2').checked) activeModes.push('p2');
+            if (document.getElementById('mode-pl').checked) activeModes.push('pl');
+            if (document.getElementById('mode-de').checked) activeModes.push('de');
+            if (activeModes.length === 0) {
+                document.getElementById('mode-p2').checked = true; activeModes.push('p2');
+                alert("Musisz mieć włączony co najmniej jeden tryb!");
+            }
+        }
+
+        function updateColors() {
+            document.documentElement.style.setProperty('--primary-color', document.getElementById('color-primary').value);
+            document.documentElement.style.setProperty('--bg-color', document.getElementById('color-bg').value);
+        }
+
+        initQueue();
+        loadNextWord();
+        resetIdleTimer();
+    </script>
+</body>
+
+</html>
